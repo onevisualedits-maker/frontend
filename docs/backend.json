@@ -1,0 +1,429 @@
+{
+  "entities": {
+    "Project": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Project",
+      "type": "object",
+      "description": "Represents a video editing project showcased in the 'My Work' gallery.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Project entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the video project."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the project, including its scope and challenges."
+        },
+        "videoUrl": {
+          "type": "string",
+          "description": "The URL for embedding the video (e.g., YouTube or Vimeo).",
+          "format": "uri"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "The URL of the thumbnail image for the video project.",
+          "format": "uri"
+        },
+        "creationDate": {
+          "type": "string",
+          "description": "The date when the project was completed or added to the portfolio.",
+          "format": "date-time"
+        },
+        "displayOrder": {
+          "type": "number",
+          "description": "A numeric value to define the display order of projects in the gallery."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "videoUrl",
+        "thumbnailUrl",
+        "creationDate"
+      ]
+    },
+    "Service": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Service",
+      "type": "object",
+      "description": "Details about a specific video editing service offered by JeevanEditz.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Service entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The name of the service (e.g., 'Color Grading', 'Documentary Editing')."
+        },
+        "shortDescription": {
+          "type": "string",
+          "description": "A concise summary of the service."
+        },
+        "longDescription": {
+          "type": "string",
+          "description": "Detailed explanation of the service, including what's covered in packages and pricing considerations."
+        },
+        "priceInfo": {
+          "type": "string",
+          "description": "Textual information about pricing, such as 'Starting at $XXX' or 'Custom Quote'."
+        },
+        "iconUrl": {
+          "type": "string",
+          "description": "URL to an icon representing this service.",
+          "format": "uri"
+        },
+        "displayOrder": {
+          "type": "number",
+          "description": "A numeric value to define the display order of services on the services page."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "shortDescription",
+        "longDescription",
+        "priceInfo"
+      ]
+    },
+    "AboutPageContent": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AboutPageContent",
+      "type": "object",
+      "description": "Stores the editable content for the 'About JeevanEditz' page.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the AboutPageContent entity. (Expected to be a single record)."
+        },
+        "content": {
+          "type": "string",
+          "description": "The rich text content for the 'About' page, including background, experience, artistic vision, and unique selling propositions."
+        },
+        "lastUpdated": {
+          "type": "string",
+          "description": "The date and time when the 'About' page content was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "content",
+        "lastUpdated"
+      ]
+    },
+    "BlogPost": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BlogPost",
+      "type": "object",
+      "description": "Represents an article published on the blog, related to video editing or industry insights.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the BlogPost entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the blog post."
+        },
+        "slug": {
+          "type": "string",
+          "description": "A URL-friendly version of the blog post title."
+        },
+        "content": {
+          "type": "string",
+          "description": "The full rich text content of the blog article."
+        },
+        "publishDate": {
+          "type": "string",
+          "description": "The date and time when the blog post was published.",
+          "format": "date-time"
+        },
+        "isPublished": {
+          "type": "boolean",
+          "description": "Indicates whether the blog post is publicly visible."
+        },
+        "featuredImageUrl": {
+          "type": "string",
+          "description": "The URL of an optional featured image for the blog post.",
+          "format": "uri"
+        },
+        "categoryId": {
+          "type": "string",
+          "description": "Reference to the Category this blog post belongs to. (Relationship: Category 1:N BlogPost)"
+        },
+        "tagIds": {
+          "type": "array",
+          "description": "References to Tags associated with this blog post. (Relationship: BlogPost N:N Tag)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "slug",
+        "content",
+        "publishDate",
+        "isPublished",
+        "categoryId"
+      ]
+    },
+    "Category": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Category",
+      "type": "object",
+      "description": "A category for organizing blog posts.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Category entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the category (e.g., 'Color Grading Tips', 'Industry News')."
+        },
+        "slug": {
+          "type": "string",
+          "description": "A URL-friendly version of the category name."
+        },
+        "description": {
+          "type": "string",
+          "description": "An optional description for the category."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "slug"
+      ]
+    },
+    "Tag": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Tag",
+      "type": "object",
+      "description": "A tag used for additional categorization of blog posts.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Tag entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the tag (e.g., 'PremierePro', 'VFX', 'SoundDesign')."
+        },
+        "slug": {
+          "type": "string",
+          "description": "A URL-friendly version of the tag name."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "slug"
+      ]
+    },
+    "ContactSubmission": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ContactSubmission",
+      "type": "object",
+      "description": "Represents a message submitted through the 'Contact' form.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ContactSubmission entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the person submitting the form."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the sender for follow-up.",
+          "format": "email"
+        },
+        "subject": {
+          "type": "string",
+          "description": "The subject line of the inquiry, if provided by the form."
+        },
+        "message": {
+          "type": "string",
+          "description": "The full message content from the submission."
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date and time when the contact form was submitted.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the inquiry (e.g., 'New', 'Read', 'Replied', 'Archived')."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "submissionDate",
+        "status"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/projects/{projectId}",
+        "definition": {
+          "entityName": "Project",
+          "schema": {
+            "$ref": "#/backend/entities/Project"
+          },
+          "description": "Collection for publicly showcased video editing projects. All documents are public-read, with full create, update, delete access restricted to administrators. No denormalized authorization fields are required as access is public or global-admin based.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "Unique identifier for a video project."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/services/{serviceId}",
+        "definition": {
+          "entityName": "Service",
+          "schema": {
+            "$ref": "#/backend/entities/Service"
+          },
+          "description": "Collection for publicly listed video editing services. All documents are public-read, with full create, update, delete access restricted to administrators. No denormalized authorization fields are required as access is public or global-admin based.",
+          "params": [
+            {
+              "name": "serviceId",
+              "description": "Unique identifier for a service offering."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/aboutPageContent/singleton",
+        "definition": {
+          "entityName": "AboutPageContent",
+          "schema": {
+            "$ref": "#/backend/entities/AboutPageContent"
+          },
+          "description": "A single document storing the editable content for the 'About JeevanEditz' page. Publicly readable, but only administrators can update it. Uses a fixed document ID 'singleton' for easy access and management.",
+          "params": []
+        }
+      },
+      {
+        "path": "/blogPosts/{blogPostId}",
+        "definition": {
+          "entityName": "BlogPost",
+          "schema": {
+            "$ref": "#/backend/entities/BlogPost"
+          },
+          "description": "Collection for publicly published blog posts. All documents in this collection are intended for public read access. Administrators have full create, update, delete access. To strictly adhere to structural segregation, only published posts reside here. Drafts are managed in a separate collection. The `isPublished` field in the schema should conceptually always be `true` for documents in this collection.",
+          "params": [
+            {
+              "name": "blogPostId",
+              "description": "Unique identifier for a published blog post (often a slug)."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/adminBlogDrafts/{blogPostId}",
+        "definition": {
+          "entityName": "BlogPost",
+          "schema": {
+            "$ref": "#/backend/entities/BlogPost"
+          },
+          "description": "Collection for blog posts that are currently in draft status, accessible only by administrators for creation, viewing, and editing. No public read access is granted to this collection. Once a draft is published, it should be moved to the `/blogPosts` collection. The `isPublished` field in the schema should conceptually always be `false` for documents in this collection.",
+          "params": [
+            {
+              "name": "blogPostId",
+              "description": "Unique identifier for a draft blog post."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/categories/{categoryId}",
+        "definition": {
+          "entityName": "Category",
+          "schema": {
+            "$ref": "#/backend/entities/Category"
+          },
+          "description": "Collection for blog post categories. All documents are public-read, allowing blog visitors to filter posts. Administrators have full create, update, delete access. No denormalized authorization fields are required.",
+          "params": [
+            {
+              "name": "categoryId",
+              "description": "Unique identifier for a blog post category."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/tags/{tagId}",
+        "definition": {
+          "entityName": "Tag",
+          "schema": {
+            "$ref": "#/backend/entities/Tag"
+          },
+          "description": "Collection for blog post tags. All documents are public-read, allowing blog visitors to filter posts. Administrators have full create, update, delete access. No denormalized authorization fields are required.",
+          "params": [
+            {
+              "name": "tagId",
+              "description": "Unique identifier for a blog post tag."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/contactSubmissions/{submissionId}",
+        "definition": {
+          "entityName": "ContactSubmission",
+          "schema": {
+            "$ref": "#/backend/entities/ContactSubmission"
+          },
+          "description": "Collection storing messages submitted through the contact form. This collection is strictly private, with read and update access granted only to administrators. Public users can create documents (submit forms) but cannot read them. No denormalized authorization fields are required.",
+          "params": [
+            {
+              "name": "submissionId",
+              "description": "Unique identifier for a contact form submission."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{adminId}",
+        "definition": {
+          "entityName": "UserRole",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Collection used for Database Access Control (DBAC) to define administrators. A document's existence with a user's `uid` as its ID signifies that user is an administrator. This allows easy checks in security rules via `exists()` for global admin privileges. Only authenticated users can read their own admin role document; write access is restricted to existing admins or system processes.",
+          "params": [
+            {
+              "name": "adminId",
+              "description": "The Firebase Authentication UID of a user with administrator privileges."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to adhere strictly to the CORE DESIGN PRINCIPLES and DESIGN STRATEGY MANDATES, prioritizing security, scalability, and debuggability. All collections are top-level, simplifying security rules and eliminating hierarchical authorization dependencies. This structure ensures Authorization Independence by not relying on `get()` calls within security rules for access control. Instead, authorization is either public, based on an explicit admin role, or path-based for user-specific data (though no user-specific data is present in this request beyond the admin role itself).\n\nStructural Segregation is a key aspect, ensuring that documents within a single collection share the same security posture. For example, 'Project', 'Service', 'Category', and 'Tag' collections are entirely public-read, while 'ContactSubmission' is admin-only. Crucially, 'BlogPost' entities are segregated into two collections: `/blogPosts` for publicly visible, published articles and `/adminBlogDrafts` for administrator-only draft content. This explicitly separates data with different read access requirements, making security rules simpler and more robust, avoiding conditional logic based on a `status` or `isPublished` field for public reads within a single collection.\n\nAccess Modeling standardizes on DBAC for global roles using the `/roles_admin/{adminId}` collection. Any user whose `uid` exists as a document ID in this collection is considered an administrator, enabling clear and auditable access control for managing all backend content. This leverages 'Existence over Content' for role checking. The structure supports QAPs by making all `list` operations inherently secure; public-facing collections are entirely readable by anyone, while admin-only collections are entirely restricted from public access. There are no scenarios where public `list` operations would require complex filtering logic within the rules themselves, as the segregation handles this structurally. For published blog posts, the client will query `/blogPosts`, and the rule will simply `allow read: true`, knowing that all documents within are published."
+  }
+}
