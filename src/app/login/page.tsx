@@ -7,8 +7,9 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { PlayCircle, Lock, Mail, Loader2 } from 'lucide-react';
+import { PlayCircle, Lock, Mail, Loader2, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -43,7 +44,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-8">
       <Card className="w-full max-w-md glass-card border-white/10 shadow-2xl">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
@@ -90,6 +91,10 @@ export default function LoginPage() {
           </form>
         </CardContent>
       </Card>
+      
+      <Link href="/setup" className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest font-bold">
+        <Settings className="w-4 h-4" /> System Setup
+      </Link>
     </div>
   );
 }

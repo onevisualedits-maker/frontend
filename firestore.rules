@@ -7,21 +7,6 @@ service cloud.firestore {
      * privileges are granted based on the existence of a user's UID in a specific 'roles_admin' collection. 
      * Most content is publicly readable for portfolio display but strictly restricted to administrators for 
      * all write operations.
-     *
-     * Data Structure: The application uses a flat, top-level collection structure to ensure authorization 
-     * independence. This avoids deep nested rules and simplifies the management of shared resources like 
-     * projects and blog posts.
-     *
-     * Key Security Decisions: 
-     * 1. Admin Authorization: We use the 'Existence over Content' pattern. If a document exists at 
-     *    /roles_admin/{uid}, that user is an administrator.
-     * 2. Structural Segregation: Blog posts are separated into /blogPosts (publicly visible) and 
-     *    /adminBlogDrafts (admin-only) to simplify list operation rules and prevent accidental exposure of drafts.
-     * 3. Public Submissions: The contact form allows any authenticated user (including anonymous) to 
-     *    create a submission, but only admins can read or manage them.
-     *
-     * Denormalization for Authorization: No specific denormalization is required for this model as 
-     * permissions are either global (admin) or public (read).
      */
 
     // --- Helper Functions ---
@@ -48,129 +33,61 @@ service cloud.firestore {
 
     // --- Collection Rules ---
 
-    /**
-     * @description Rules for the Project collection. Publicly visible video projects managed by admins.
-     * @path /projects/{projectId}
-     * @allow (get, list) for any user.
-     * @allow (create, update, delete) for users verified as admins in /roles_admin.
-     * @deny (write) if the user is not an admin.
-     * @principle Public read with role-based write access.
-     */
     match /projects/{projectId} {
       allow get, list: if true;
       allow create: if isAdmin();
       allow update, delete: if isExistingAdmin();
     }
 
-    /**
-     * @description Rules for the Service collection. Details of services offered, publicly readable.
-     * @path /services/{serviceId}
-     * @allow (get, list) for any user.
-     * @allow (create, update, delete) for administrators.
-     * @deny (write) for non-admin users.
-     * @principle Public read with global role-based writes.
-     */
     match /services/{serviceId} {
       allow get, list: if true;
       allow create: if isAdmin();
       allow update, delete: if isExistingAdmin();
     }
 
-    /**
-     * @description Rules for the About Page Content. Uses a singleton pattern for the page's rich text.
-     * @path /aboutPageContent/singleton
-     * @allow (get) for any user.
-     * @allow (update) for administrators.
-     * @deny (create, delete) even for admins to preserve the singleton structure, or allow if manual setup.
-     * @principle Singleton content protection.
-     */
     match /aboutPageContent/{docId} {
       allow get: if true;
-      allow list: if false; // List is disabled as it's a singleton pattern.
+      allow list: if false; 
       allow create, update: if isAdmin();
       allow delete: if isAdmin();
     }
 
-    /**
-     * @description Rules for published blog posts. Segregated for easy public consumption.
-     * @path /blogPosts/{blogPostId}
-     * @allow (get, list) for any user.
-     * @allow (create, update, delete) for administrators.
-     * @deny (write) if the user lacks the admin role.
-     * @principle Structural segregation for public data.
-     */
     match /blogPosts/{blogPostId} {
       allow get, list: if true;
       allow create: if isAdmin();
       allow update, delete: if isExistingAdmin();
     }
 
-    /**
-     * @description Rules for blog post drafts. Accessible only to the administration team.
-     * @path /adminBlogDrafts/{blogPostId}
-     * @allow (get, list, create, update, delete) for administrators.
-     * @deny (all) for non-admin users.
-     * @principle Private staging area for content.
-     */
     match /adminBlogDrafts/{blogPostId} {
       allow get, list, create: if isAdmin();
       allow update, delete: if isExistingAdmin();
     }
 
-    /**
-     * @description Rules for blog categories used for organization.
-     * @path /categories/{categoryId}
-     * @allow (get, list) for any user.
-     * @allow (create, update, delete) for administrators.
-     * @principle Publicly readable taxonomy managed by admins.
-     */
     match /categories/{categoryId} {
       allow get, list: if true;
       allow create: if isAdmin();
       allow update, delete: if isExistingAdmin();
     }
 
-    /**
-     * @description Rules for blog tags used for filtering.
-     * @path /tags/{tagId}
-     * @allow (get, list) for any user.
-     * @allow (create, update, delete) for administrators.
-     * @principle Publicly readable taxonomy managed by admins.
-     */
     match /tags/{tagId} {
       allow get, list: if true;
       allow create: if isAdmin();
       allow update, delete: if isExistingAdmin();
     }
 
-    /**
-     * @description Rules for contact form submissions. Public users can submit, only admins can view.
-     * @path /contactSubmissions/{submissionId}
-     * @allow (create) for any authenticated user (including anonymous).
-     * @allow (get, list, update, delete) for administrators.
-     * @deny (get, list) for the submitting user to prevent data leaking.
-     * @principle Write-only public access with admin oversight.
-     */
     match /contactSubmissions/{submissionId} {
-      // Allow creation for anyone who is signed in (anonymous or password).
-      // This protects the write operation behind a basic auth check while remaining open for leads.
       allow create: if isSignedIn();
       allow get, list: if isAdmin();
       allow update, delete: if isExistingAdmin();
     }
 
-    /**
-     * @description Rules for admin role management. Defines who has global site permissions.
-     * @path /roles_admin/{adminId}
-     * @allow (get) for the user themselves or existing admins.
-     * @allow (list) for administrators only.
-     * @allow (write) for existing administrators.
-     * @principle Existence-based role management (DBAC).
-     */
     match /roles_admin/{adminId} {
       allow get: if isOwner(adminId) || isAdmin();
       allow list: if isAdmin();
-      allow create, update, delete: if isAdmin();
+      // Bootstrap permission: Allow creation if the user is signed in and is the owner.
+      // In production, you might want to limit this further or use custom claims.
+      allow create: if isSignedIn() && isOwner(adminId);
+      allow update, delete: if isAdmin();
     }
   }
 }
