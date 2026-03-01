@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -11,7 +12,8 @@ import {
   UserCircle, 
   Inbox, 
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Settings
 } from 'lucide-react';
 import { useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -23,6 +25,7 @@ const menuItems = [
   { name: 'Blog', href: '/admin/blog', icon: FileText },
   { name: 'About Page', href: '/admin/about', icon: UserCircle },
   { name: 'Inbox', href: '/admin/inbox', icon: Inbox },
+  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 export function AdminSidebar() {

@@ -1,92 +1,63 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * Core Philosophy: This ruleset implements a Database Access Control (DBAC) model where administrative 
-     * privileges are granted based on the existence of a user's UID in a specific 'roles_admin' collection. 
-     * Most content is publicly readable for portfolio display but strictly restricted to administrators for 
-     * all write operations.
-     */
-
-    // --- Helper Functions ---
-
-    /** @description Checks if the user is authenticated with Firebase Auth. */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /** @description Checks if the authenticated user's UID matches the provided userId. */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /** @description Checks if the user has an entry in the roles_admin collection. */
     function isAdmin() {
       return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
-    /** @description Combines admin check with a requirement that the document exists for updates/deletes. */
-    function isExistingAdmin() {
-      return isAdmin() && resource != null;
-    }
-
-    // --- Collection Rules ---
-
     match /projects/{projectId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /services/{serviceId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /aboutPageContent/{docId} {
-      allow get: if true;
-      allow list: if false; 
-      allow create, update: if isAdmin();
-      allow delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /siteSettings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /blogPosts/{blogPostId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /adminBlogDrafts/{blogPostId} {
-      allow get, list, create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
+      allow read, write: if isAdmin();
     }
 
     match /categories/{categoryId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
-    }
-
-    match /tags/{tagId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isExistingAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /contactSubmissions/{submissionId} {
-      allow create: if isSignedIn();
-      allow get, list: if isAdmin();
-      allow update, delete: if isExistingAdmin();
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
     }
 
     match /roles_admin/{adminId} {
       allow get: if isOwner(adminId) || isAdmin();
       allow list: if isAdmin();
-      // Bootstrap permission: Allow creation if the user is signed in and is the owner.
-      // In production, you might want to limit this further or use custom claims.
-      allow create: if isSignedIn() && isOwner(adminId);
+      allow create: if isSignedIn() && (isOwner(adminId) || isAdmin());
       allow update, delete: if isAdmin();
     }
   }
