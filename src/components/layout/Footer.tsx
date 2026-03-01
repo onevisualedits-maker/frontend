@@ -20,7 +20,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <span className="font-headline font-bold text-2xl uppercase tracking-tighter">
-              Frame<span className="text-primary">Craft</span>
+              Jeevan<span className="text-primary">Editz</span>
             </span>
             <p className="mt-4 text-muted-foreground max-w-xs">
               Elevating visuals and crafting stories through cinematic video editing for creators and brands worldwide.

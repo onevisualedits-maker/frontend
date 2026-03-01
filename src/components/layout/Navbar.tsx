@@ -9,9 +9,10 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
+  {name: "Home", href: "/"},
+  { name: 'About', href: '/about' },
   { name: 'Work', href: '/work' },
   { name: 'Services', href: '/services' },
-  { name: 'About', href: '/about' },
   { name: 'Blog', href: '/blog' },
 ];
 
@@ -32,7 +33,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2 group">
             <PlayCircle className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
             <span className="font-headline font-bold text-xl tracking-tight uppercase">
-              Frame<span className="text-primary">Craft</span>
+              Jeevan<span className="text-primary">Editz</span>
             </span>
           </Link>
 

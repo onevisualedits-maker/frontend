@@ -18,9 +18,12 @@ export default function AdminDashboard() {
   const blogQuery = useMemoFirebase(() => collection(firestore, 'blogPosts'), [firestore]);
   const { data: blogs } = useCollection(blogQuery);
 
+  const servicesQuery = useMemoFirebase(() => collection(firestore, 'services'), [firestore]);
+  const { data: services } = useCollection(servicesQuery);
+
   const stats = [
     { label: 'Total Projects', value: projects?.length || 0, icon: Video, color: 'text-blue-500' },
-    { label: 'Active Services', value: 3, icon: Briefcase, color: 'text-purple-500' },
+    { label: 'Active Services', value: services?.length || 0, icon: Briefcase, color: 'text-purple-500' },
     { label: 'Blog Posts', value: blogs?.length || 0, icon: FileText, color: 'text-green-500' },
     { label: 'New Inquiries', value: submissions?.filter(s => s.status === 'New').length || 0, icon: Inbox, color: 'text-red-500' },
   ];

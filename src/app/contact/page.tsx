@@ -17,6 +17,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { collection } from 'firebase/firestore';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name is required" }),
@@ -27,6 +29,8 @@ const formSchema = z.object({
 
 export default function ContactPage() {
   const { toast } = useToast();
+  const firestore = useFirestore();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,23 +41,48 @@ export default function ContactPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Message Sent!",
-      description: "Thanks for reaching out. I'll get back to you within 24 hours.",
-    });
-    form.reset();
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      if (firestore) {
+        addDocumentNonBlocking(collection(firestore, 'contactSubmissions'), {
+          ...values,
+          submissionDate: new Date().toISOString(),
+          status: 'New'
+        });
+      }
+
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to send email');
+      }
+
+      toast({
+        title: "Message Sent!",
+        description: "Thanks for reaching out. I'll get back to you within 24 hours.",
+      });
+      form.reset();
+    } catch (e) {
+      toast({
+        variant: "destructive",
+        title: "Error Sending Message",
+        description: "There was a problem sending your message. Please try again.",
+      });
+    }
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+    <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
-          <h1 className="font-headline text-5xl md:text-7xl font-bold tracking-tighter uppercase mb-8">
+          <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tighter uppercase mb-6 animate-fade-up">
             Let's <span className="text-primary">Connect</span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-12 max-w-lg leading-relaxed">
+          <p className="text-base text-muted-foreground mb-10 max-w-lg leading-relaxed animate-fade-up stagger-2">
             Have a project in mind? Looking for a collaboration? Or just want to say hi? My inbox is always open.
           </p>
 
@@ -67,7 +96,7 @@ export default function ContactPage() {
               <a
                 key={i}
                 href={contact.href}
-                className="flex items-center gap-6 group hover:text-primary transition-colors"
+                className={`flex items-center gap-6 group hover:text-primary transition-colors animate-fade-up stagger-${i + 3}`}
               >
                 <div className="w-14 h-14 rounded-2xl glass-card flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-lg">
                   <contact.icon className="w-6 h-6" />
@@ -81,7 +110,7 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="glass-card p-10 rounded-[3rem] shadow-2xl relative border-primary/10">
+        <div className="glass-card p-10 rounded-[3rem] shadow-2xl relative border-primary/10 animate-scale-in stagger-2">
           <div className="absolute top-0 right-0 p-8 text-primary/10 -z-10">
             <Send className="w-40 h-40" />
           </div>

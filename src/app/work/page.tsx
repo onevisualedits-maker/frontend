@@ -1,12 +1,13 @@
-
 "use client";
 
 import { useState } from 'react';
 import Image from 'next/image';
 import { Play, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { PlaceHolderImages } from '@/app/lib/placeholder-images';
 import { Badge } from '@/components/ui/badge';
+import { VideoPlayer } from '@/components/ui/VideoPlayer';
 import {
   Dialog,
   DialogContent,
@@ -15,18 +16,21 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy } from 'firebase/firestore';
+
 const categories = ["All", "Music Video", "Commercial", "Wedding", "Travel", "Vlog"];
 
-const projects = [
-  { id: "project-1", title: "Alpine Peaks", category: "Travel", year: "2024", duration: "2:45" },
-  { id: "project-2", title: "Neon Pulse", category: "Music Video", year: "2023", duration: "3:12" },
-  { id: "project-3", title: "Tech Sphere X", category: "Commercial", year: "2024", duration: "0:30" },
-  { id: "project-4", title: "Eternal Vows", category: "Wedding", year: "2023", duration: "12:00" },
-  { id: "project-1", title: "City Lights", category: "Vlog", year: "2024", duration: "8:20" },
-  { id: "project-2", title: "Urban Beat", category: "Music Video", year: "2023", duration: "4:00" },
-];
-
 export default function WorkPage() {
+  const firestore = useFirestore();
+  const projectsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'projects'), orderBy('creationDate', 'desc'));
+  }, [firestore]);
+
+  const { data: firebaseProjects, isLoading } = useCollection(projectsQuery);
+  const projects = firebaseProjects || [];
+
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filteredProjects = activeCategory === "All"
@@ -34,26 +38,25 @@ export default function WorkPage() {
     : projects.filter(p => p.category === activeCategory);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
-      <div className="mb-16">
-        <h1 className="font-headline text-5xl md:text-7xl font-bold tracking-tighter uppercase mb-6">
+    <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+      <div className="mb-10">
+        <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tighter uppercase mb-4 animate-fade-up">
           Portfolio <span className="text-primary">Gallery</span>
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mb-12">
+        <p className="text-base text-muted-foreground max-w-2xl mb-8 animate-fade-up stagger-2">
           An exploration of style, motion, and narrative. Here is a curated selection of my professional work.
         </p>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-12">
+        <div className="flex flex-wrap gap-2 mb-12 animate-fade-up stagger-3">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                activeCategory === cat
-                  ? "lavender-gradient text-white shadow-lg"
-                  : "glass-card hover:border-primary/50"
-              }`}
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:scale-105 ${activeCategory === cat
+                ? "lavender-gradient text-white shadow-lg"
+                : "glass-card hover:border-primary/50"
+                }`}
             >
               {cat}
             </button>
@@ -62,23 +65,22 @@ export default function WorkPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {isLoading && <div className="col-span-full py-20 text-center text-muted-foreground shimmer rounded-2xl">Loading portfolio...</div>}
         {filteredProjects.map((project, idx) => {
-          const img = PlaceHolderImages.find(p => p.id === project.id);
           return (
             <Dialog key={`${project.id}-${idx}`}>
               <DialogTrigger asChild>
-                <div className="group cursor-pointer">
+                <div className={`group cursor-pointer animate-fade-up stagger-${Math.min(idx + 1, 6)}`}>
                   <div className="relative aspect-video overflow-hidden rounded-2xl glass-card mb-4">
                     <Image
-                      src={img?.imageUrl || 'https://picsum.photos/seed/placeholder/800/600'}
+                      src={project.thumbnailUrl || 'https://picsum.photos/seed/placeholder/800/600'}
                       alt={project.title}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      data-ai-hint={img?.imageHint || "video thumbnail"}
                     />
                     <div className="absolute inset-0 bg-background/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center text-white shadow-2xl scale-75 group-hover:scale-100 transition-transform">
-                        <Play className="fill-current ml-1" />
+                      <div className="w-16 h-16 rounded-full lavender-gradient flex items-center justify-center text-white shadow-2xl scale-75 group-hover:scale-100 transition-transform">
+                        <Play className="fill-white w-6 h-6 ml-1" />
                       </div>
                     </div>
                     <div className="absolute top-4 left-4">
@@ -95,36 +97,52 @@ export default function WorkPage() {
                   </div>
                 </div>
               </DialogTrigger>
-              <DialogContent className="max-w-5xl bg-background/95 border-border shadow-2xl">
+              <DialogContent className="max-w-4xl bg-background/98 border-white/10 shadow-2xl overflow-y-auto max-h-[90vh]">
                 <DialogHeader>
-                  <DialogTitle className="font-headline text-3xl font-bold uppercase">{project.title}</DialogTitle>
+                  <DialogTitle className="font-headline text-2xl font-bold uppercase tracking-tighter">{project.title}</DialogTitle>
                 </DialogHeader>
-                <div className="aspect-video w-full bg-black rounded-lg overflow-hidden flex items-center justify-center group relative">
-                  <Image
-                    src={img?.imageUrl || 'https://picsum.photos/seed/placeholder/800/600'}
-                    alt={project.title}
-                    fill
-                    className="object-cover opacity-50 blur-sm"
+
+                {/* ── Video Player ── */}
+                <div className="rounded-2xl overflow-hidden glass-card border-0 bg-black aspect-video">
+                  <VideoPlayer
+                    url={project.videoUrl || ''}
+                    thumbnail={project.thumbnailUrl}
+                    title={project.title}
                   />
-                  <div className="z-10 text-center p-8">
-                    <Play className="w-20 h-20 text-primary mx-auto mb-6 opacity-80" />
-                    <p className="text-xl font-medium mb-6">Video Player Integration Placeholder</p>
-                    <Button variant="secondary" className="lavender-gradient text-white">
-                      Watch on Vimeo <ExternalLink className="ml-2 w-4 h-4" />
-                    </Button>
-                  </div>
                 </div>
-                <div className="mt-4 flex flex-col gap-2">
-                  <p className="text-muted-foreground leading-relaxed">
-                    This project was a deep dive into cinematic storytelling for {project.category}. Focusing on fast-paced cuts and rhythmic transitions to create an immersive atmosphere.
-                  </p>
-                  <div className="flex gap-4 mt-2">
-                    <div className="text-xs">
-                      <span className="text-muted-foreground font-bold uppercase tracking-widest mr-1">Client:</span> Global Creatives
-                    </div>
-                    <div className="text-xs">
-                      <span className="text-muted-foreground font-bold uppercase tracking-widest mr-1">Role:</span> Lead Editor & Colorist
-                    </div>
+
+                {/* ── Project metadata ── */}
+                <div className="mt-2 space-y-4">
+                  {project.description && (
+                    <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                      {project.description}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-4 pt-4 border-t border-white/10">
+                    {project.category && (
+                      <div className="text-xs">
+                        <span className="text-muted-foreground font-bold uppercase tracking-widest mr-2">Category:</span>
+                        <Badge variant="secondary" className="text-[10px] uppercase font-bold">{project.category}</Badge>
+                      </div>
+                    )}
+                    {project.client && (
+                      <div className="text-xs">
+                        <span className="text-muted-foreground font-bold uppercase tracking-widest mr-2">Client:</span>
+                        <span className="text-foreground">{project.client}</span>
+                      </div>
+                    )}
+                    {project.year && (
+                      <div className="text-xs">
+                        <span className="text-muted-foreground font-bold uppercase tracking-widest mr-2">Year:</span>
+                        <span className="text-foreground">{project.year}</span>
+                      </div>
+                    )}
+                    {project.duration && (
+                      <div className="text-xs">
+                        <span className="text-muted-foreground font-bold uppercase tracking-widest mr-2">Duration:</span>
+                        <span className="text-foreground">{project.duration}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </DialogContent>

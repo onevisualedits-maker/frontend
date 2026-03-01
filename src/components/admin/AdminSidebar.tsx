@@ -4,27 +4,30 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { 
-  LayoutDashboard, 
-  Video, 
-  Briefcase, 
-  FileText, 
-  UserCircle, 
-  Inbox, 
+import {
+  LayoutDashboard,
+  Video,
+  Briefcase,
+  FileText,
+  UserCircle,
+  Inbox,
   LogOut,
   ChevronRight,
-  Settings
+  Settings,
+  Clapperboard,
 } from 'lucide-react';
 import { useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 
 const menuItems = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'Hero', href: '/admin/hero', icon: Clapperboard },
   { name: 'Projects', href: '/admin/projects', icon: Video },
   { name: 'Services', href: '/admin/services', icon: Briefcase },
   { name: 'Blog', href: '/admin/blog', icon: FileText },
   { name: 'About Page', href: '/admin/about', icon: UserCircle },
   { name: 'Inbox', href: '/admin/inbox', icon: Inbox },
+  { name: 'Users', href: '/admin/users', icon: UserCircle },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
@@ -52,8 +55,8 @@ export function AdminSidebar() {
               href={item.href}
               className={cn(
                 "flex items-center justify-between p-3 rounded-xl transition-all group",
-                isActive 
-                  ? "lavender-gradient text-white shadow-lg" 
+                isActive
+                  ? "lavender-gradient text-white shadow-lg"
                   : "hover:bg-white/5 text-muted-foreground hover:text-white"
               )}
             >
