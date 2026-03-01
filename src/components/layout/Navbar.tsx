@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Menu, X, PlayCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -16,6 +17,13 @@ const navLinks = [
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Hide Navbar on admin, login and setup pages
+  const isAdminPath = pathname?.startsWith('/admin');
+  const isAuthPath = pathname === '/login' || pathname === '/setup';
+  
+  if (isAdminPath || isAuthPath) return null;
 
   return (
     <nav className="sticky top-0 z-50 w-full glass-card border-b-0 border-x-0 rounded-none bg-background/60">

@@ -1,8 +1,19 @@
 
+"use client";
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Youtube, Instagram, Twitter, Mail } from 'lucide-react';
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // Hide Footer on admin, login and setup pages
+  const isAdminPath = pathname?.startsWith('/admin');
+  const isAuthPath = pathname === '/login' || pathname === '/setup';
+  
+  if (isAdminPath || isAuthPath) return null;
+
   return (
     <footer className="bg-card/30 border-t border-border mt-12">
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
