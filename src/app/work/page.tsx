@@ -65,16 +65,16 @@ export default function WorkPage() {
         {filteredProjects.map((project, idx) => {
           const img = PlaceHolderImages.find(p => p.id === project.id);
           return (
-            <Dialog key={idx}>
+            <Dialog key={`${project.id}-${idx}`}>
               <DialogTrigger asChild>
                 <div className="group cursor-pointer">
                   <div className="relative aspect-video overflow-hidden rounded-2xl glass-card mb-4">
                     <Image
-                      src={img?.imageUrl || ''}
+                      src={img?.imageUrl || 'https://picsum.photos/seed/placeholder/800/600'}
                       alt={project.title}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      data-ai-hint={img?.imageHint}
+                      data-ai-hint={img?.imageHint || "video thumbnail"}
                     />
                     <div className="absolute inset-0 bg-background/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center text-white shadow-2xl scale-75 group-hover:scale-100 transition-transform">
@@ -101,7 +101,7 @@ export default function WorkPage() {
                 </DialogHeader>
                 <div className="aspect-video w-full bg-black rounded-lg overflow-hidden flex items-center justify-center group relative">
                   <Image
-                    src={img?.imageUrl || ''}
+                    src={img?.imageUrl || 'https://picsum.photos/seed/placeholder/800/600'}
                     alt={project.title}
                     fill
                     className="object-cover opacity-50 blur-sm"
@@ -120,10 +120,10 @@ export default function WorkPage() {
                   </p>
                   <div className="flex gap-4 mt-2">
                     <div className="text-xs">
-                      <span className="text-muted-foreground font-bold uppercase tracking-widest">Client:</span> Global Creatives
+                      <span className="text-muted-foreground font-bold uppercase tracking-widest mr-1">Client:</span> Global Creatives
                     </div>
                     <div className="text-xs">
-                      <span className="text-muted-foreground font-bold uppercase tracking-widest">Role:</span> Lead Editor & Colorist
+                      <span className="text-muted-foreground font-bold uppercase tracking-widest mr-1">Role:</span> Lead Editor & Colorist
                     </div>
                   </div>
                 </div>

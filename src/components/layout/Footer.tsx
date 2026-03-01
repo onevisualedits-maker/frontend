@@ -27,18 +27,18 @@ export function Footer() {
           <div>
             <h3 className="font-headline font-semibold mb-4">Connect</h3>
             <div className="flex space-x-4">
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Youtube className="w-5 h-5" /></Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Instagram className="w-5 h-5" /></Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary"><Twitter className="w-5 h-5" /></Link>
-              <Link href="mailto:contact@jeevaneditz.com" className="text-muted-foreground hover:text-primary"><Mail className="w-5 h-5" /></Link>
+              <Link href="#" className="text-muted-foreground hover:text-primary" aria-label="Youtube"><Youtube className="w-5 h-5" /></Link>
+              <Link href="#" className="text-muted-foreground hover:text-primary" aria-label="Instagram"><Instagram className="w-5 h-5" /></Link>
+              <Link href="#" className="text-muted-foreground hover:text-primary" aria-label="Twitter"><Twitter className="w-5 h-5" /></Link>
+              <Link href="mailto:contact@jeevaneditz.com" className="text-muted-foreground hover:text-primary" aria-label="Email"><Mail className="w-5 h-5" /></Link>
             </div>
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} JeevanEditz. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="#" className="hover:text-primary">Privacy Policy</Link>
-            <Link href="#" className="hover:text-primary">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-primary">Terms of Service</Link>
           </div>
         </div>
       </div>
