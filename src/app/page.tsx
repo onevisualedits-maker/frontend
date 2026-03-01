@@ -142,12 +142,6 @@ export default function Home() {
                   <Link href={cta2Href}>{cta2Text}</Link>
                 </Button>
               </div>
-
-              {/* Scroll hint */}
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-muted-foreground animate-bounce">
-                <div className="w-0.5 h-6 bg-white/20 rounded-full" />
-                <span className="text-[10px] uppercase tracking-widest">Scroll</span>
-              </div>
             </>
           )}
         </div>
