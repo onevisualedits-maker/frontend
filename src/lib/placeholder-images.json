@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-bg",
+      "description": "Abstract lavender digital background",
+      "imageUrl": "https://images.unsplash.com/photo-1769228092677-9f2d7d7c19f3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxhYnN0cmFjdCUyMGxhdmVuZGVyJTIwZ3JhZGllbnR8ZW58MHx8fHwxNzcyMzQ2OTE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract lavender gradient"
+    },
+    {
+      "id": "project-1",
+      "description": "Cinematic travel montage thumbnail",
+      "imageUrl": "https://images.unsplash.com/photo-1649695121624-b14760998e3c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjaW5lbWF0aWMlMjB0cmF2ZWx8ZW58MHx8fHwxNzcyMzQ2OTE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cinematic travel"
+    },
+    {
+      "id": "project-2",
+      "description": "Modern music video thumbnail",
+      "imageUrl": "https://images.unsplash.com/photo-1490971512195-3385e8e72ab4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtdXNpYyUyMHZpZGVvfGVufDB8fHx8MTc3MjI4ODY4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "music video"
+    },
+    {
+      "id": "project-3",
+      "description": "Tech product commercial thumbnail",
+      "imageUrl": "https://images.unsplash.com/photo-1542879602-cff2923f19c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0ZWNoJTIwY29tbWVyY2lhbHxlbnwwfHx8fDE3NzIzNDY5MTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "tech commercial"
+    },
+    {
+      "id": "project-4",
+      "description": "Wedding highlight film thumbnail",
+      "imageUrl": "https://images.unsplash.com/photo-1703171481981-05e05bb6fa05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3ZWRkaW5nJTIwdmlkZW98ZW58MHx8fHwxNzcyMzQ2OTE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wedding video"
+    },
+    {
+      "id": "about-jeevan",
+      "description": "Professional photo of Jeevan",
+      "imageUrl": "https://images.unsplash.com/photo-1746458825397-9cd95fff0dfb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwcm9mZXNzaW9uYWwlMjBlZGl0b3J8ZW58MHx8fHwxNzcyMzQ2OTE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "professional editor"
+    },
+    {
+      "id": "blog-1",
+      "description": "Video editing software interface",
+      "imageUrl": "https://images.unsplash.com/photo-1634476229733-f78a14a15dd2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxlZGl0aW5nJTIwc29mdHdhcmV8ZW58MHx8fHwxNzcyMzQ2OTE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "editing software"
+    }
+  ]
 }

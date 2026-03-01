@@ -1,0 +1,47 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "hero-bg",
+      "description": "Abstract lavender digital background",
+      "imageUrl": "https://picsum.photos/seed/lavender1/1920/1080",
+      "imageHint": "abstract lavender gradient"
+    },
+    {
+      "id": "project-1",
+      "description": "Cinematic travel montage thumbnail",
+      "imageUrl": "https://picsum.photos/seed/travel/800/600",
+      "imageHint": "cinematic travel"
+    },
+    {
+      "id": "project-2",
+      "description": "Modern music video thumbnail",
+      "imageUrl": "https://picsum.photos/seed/music/800/600",
+      "imageHint": "music video"
+    },
+    {
+      "id": "project-3",
+      "description": "Tech product commercial thumbnail",
+      "imageUrl": "https://picsum.photos/seed/tech/800/600",
+      "imageHint": "tech commercial"
+    },
+    {
+      "id": "project-4",
+      "description": "Wedding highlight film thumbnail",
+      "imageUrl": "https://picsum.photos/seed/wedding/800/600",
+      "imageHint": "wedding video"
+    },
+    {
+      "id": "about-jeevan",
+      "description": "Professional photo of Jeevan",
+      "imageUrl": "https://picsum.photos/seed/editor/600/800",
+      "imageHint": "professional editor"
+    },
+    {
+      "id": "blog-1",
+      "description": "Video editing software interface",
+      "imageUrl": "https://picsum.photos/seed/edit/800/400",
+      "imageHint": "editing software"
+    }
+  ]
+}
