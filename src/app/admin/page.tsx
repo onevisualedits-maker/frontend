@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, limit } from 'firebase/firestore';
-import { Inbox, Video, FileText, Briefcase, TrendingUp } from 'lucide-react';
+import { Inbox, Video, FileText, Briefcase, TrendingUp, Star } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -21,11 +21,18 @@ export default function AdminDashboard() {
   const servicesQuery = useMemoFirebase(() => collection(firestore, 'services'), [firestore]);
   const { data: services } = useCollection(servicesQuery);
 
+  const testimonialsQuery = useMemoFirebase(
+    () => query(collection(firestore, 'testimonials'), where('approved', '==', false)),
+    [firestore]
+  );
+  const { data: pendingTestimonials } = useCollection(testimonialsQuery);
+
   const stats = [
-    { label: 'Total Projects', value: projects?.length || 0, icon: Video, color: 'text-blue-500' },
-    { label: 'Active Services', value: services?.length || 0, icon: Briefcase, color: 'text-purple-500' },
-    { label: 'Blog Posts', value: blogs?.length || 0, icon: FileText, color: 'text-green-500' },
-    { label: 'New Inquiries', value: submissions?.filter(s => s.status === 'New').length || 0, icon: Inbox, color: 'text-red-500' },
+    { label: 'Total Projects', value: projects?.length || 0, icon: Video, color: 'text-blue-500', href: '/admin/projects' },
+    { label: 'Active Services', value: services?.length || 0, icon: Briefcase, color: 'text-purple-500', href: '/admin/services' },
+    { label: 'Blog Posts', value: blogs?.length || 0, icon: FileText, color: 'text-green-500', href: '/admin/blog' },
+    { label: 'New Inquiries', value: submissions?.filter(s => s.status === 'New').length || 0, icon: Inbox, color: 'text-red-500', href: '/admin/inbox' },
+    { label: 'Pending Reviews', value: pendingTestimonials?.length || 0, icon: Star, color: 'text-yellow-500', href: '/admin/testimonials' },
   ];
 
   return (
@@ -37,20 +44,28 @@ export default function AdminDashboard() {
         <p className="text-muted-foreground">Welcome back, Jeevan. Here's what's happening today.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {stats.map((stat, i) => (
-          <Card key={i} className="glass-card border-white/10">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
-              <stat.icon className={`w-4 h-4 ${stat.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                <TrendingUp className="w-3 h-3 text-green-500" /> +4% from last month
-              </p>
-            </CardContent>
-          </Card>
+          <Link key={i} href={stat.href} className="group">
+            <Card className={`glass-card border-white/10 hover:border-primary/30 transition-all group-hover:scale-[1.02] ${stat.label === 'Pending Reviews' && stat.value > 0
+                ? 'border-yellow-500/30 bg-yellow-500/5'
+                : ''
+              }`}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
+                <stat.icon className={`w-4 h-4 ${stat.color}`} />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${stat.label === 'Pending Reviews' && stat.value > 0 ? 'text-yellow-400' : ''
+                  }`}>{stat.value}</div>
+                <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                  {stat.label === 'Pending Reviews' && stat.value > 0
+                    ? <span className="text-yellow-400 font-semibold">Needs your attention →</span>
+                    : <><TrendingUp className="w-3 h-3 text-green-500" /> Up to date</>}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 

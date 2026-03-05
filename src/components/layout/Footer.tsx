@@ -4,15 +4,24 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Youtube, Instagram, Twitter, Mail } from 'lucide-react';
+import { useSiteSettings } from '@/hooks/use-site-settings';
 
 export function Footer() {
   const pathname = usePathname();
+  const { settings } = useSiteSettings();
 
   // Hide Footer on admin, login and setup pages
   const isAdminPath = pathname?.startsWith('/admin');
   const isAuthPath = pathname === '/login' || pathname === '/setup';
-  
+
   if (isAdminPath || isAuthPath) return null;
+
+  const socials = [
+    { href: settings.youtubeUrl, icon: Youtube, label: 'YouTube' },
+    { href: settings.instagramUrl, icon: Instagram, label: 'Instagram' },
+    { href: settings.twitterUrl, icon: Twitter, label: 'Twitter / X' },
+    { href: `mailto:${settings.contactEmail}`, icon: Mail, label: 'Email' },
+  ].filter(s => !!s.href);
 
   return (
     <footer className="bg-card/30 border-t border-border mt-12">
@@ -37,12 +46,24 @@ export function Footer() {
           </div>
           <div>
             <h3 className="font-headline font-semibold mb-4">Connect</h3>
-            <div className="flex space-x-4">
-              <Link href="#" className="text-muted-foreground hover:text-primary" aria-label="Youtube"><Youtube className="w-5 h-5" /></Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary" aria-label="Instagram"><Instagram className="w-5 h-5" /></Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary" aria-label="Twitter"><Twitter className="w-5 h-5" /></Link>
-              <Link href="mailto:contact@jeevaneditz.com" className="text-muted-foreground hover:text-primary" aria-label="Email"><Mail className="w-5 h-5" /></Link>
-            </div>
+            {socials.length > 0 ? (
+              <div className="flex space-x-4">
+                {socials.map(({ href, icon: Icon, label }) => (
+                  <Link
+                    key={label}
+                    href={href}
+                    target={href.startsWith('mailto') ? undefined : '_blank'}
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                    aria-label={label}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">No social links configured yet.</p>
+            )}
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">

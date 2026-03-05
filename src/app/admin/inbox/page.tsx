@@ -27,13 +27,6 @@ export default function AdminInboxPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="font-headline text-4xl font-bold uppercase tracking-tighter mb-2">
-          Contact <span className="text-primary">Inbox</span>
-        </h1>
-        <p className="text-muted-foreground">Manage your incoming leads and inquiries.</p>
-      </div>
-
       <div className="grid gap-6">
         {isLoading ? (
           <div className="text-center py-20 text-muted-foreground">Loading inbox...</div>

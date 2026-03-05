@@ -80,8 +80,8 @@ export default function Home() {
     return query(collection(firestore, 'testimonials'), orderBy('createdAt', 'desc'), limit(6));
   }, [firestore]);
   const { data: testimonials, isLoading: testimonialsLoading } = useCollection(testimonialsQuery);
-  // Show only approved testimonials
-  const approvedTestimonials = (testimonials || []).filter((t: any) => t.approved !== false || t.approved === undefined);
+  // Show ONLY explicitly admin-approved testimonials
+  const approvedTestimonials = (testimonials || []).filter((t: any) => t.approved === true);
 
   return (
     <div className="flex flex-col gap-32 md:gap-48 pb-32 md:pb-48">

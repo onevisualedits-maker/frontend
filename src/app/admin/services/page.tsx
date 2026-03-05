@@ -11,10 +11,46 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Plus, Trash2, Edit2, Briefcase, Save, X,
-  DollarSign, Star, Hash, AlignLeft, Search, Package
+  DollarSign, Star, Hash, AlignLeft, Search, Package,
+  Video, Tv2, Megaphone, Plane, Film, Instagram
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+// ── Category / Subcategory Config ──────────────────────────────────────────────
+export const CATEGORIES: {
+  value: string;
+  label: string;
+  icon: React.ElementType;
+  color: string;
+  subcategories?: { value: string; label: string }[];
+}[] = [
+    {
+      value: 'social_media',
+      label: 'Social Media',
+      icon: Instagram,
+      color: 'text-pink-400',
+      subcategories: [
+        { value: 'insta_reels', label: 'Insta Reels' },
+        { value: 'youtube_shorts', label: 'YouTube Shorts' },
+        { value: 'tiktoks', label: 'TikToks' },
+      ],
+    },
+    { value: 'commercials', label: 'Commercials', icon: Tv2, color: 'text-blue-400' },
+    { value: 'ads', label: 'Ads', icon: Megaphone, color: 'text-yellow-400' },
+    { value: 'travel', label: 'Travel', icon: Plane, color: 'text-cyan-400' },
+    { value: 'vlog', label: 'Vlog', icon: Video, color: 'text-green-400' },
+  ];
+
+function getCategoryMeta(value: string) {
+  return CATEGORIES.find(c => c.value === value);
+}
+
+function getSubcategoryLabel(catValue: string, subValue: string) {
+  const cat = getCategoryMeta(catValue);
+  return cat?.subcategories?.find(s => s.value === subValue)?.label || subValue;
+}
+
+// ── Form ───────────────────────────────────────────────────────────────────────
 const EMPTY_FORM = {
   title: '',
   shortDescription: '',
@@ -22,6 +58,8 @@ const EMPTY_FORM = {
   priceInfo: '',
   displayOrder: 1,
   popular: false,
+  category: '',
+  subcategory: '',
 };
 
 type FormData = typeof EMPTY_FORM;
@@ -38,6 +76,7 @@ export default function AdminServicesPage() {
   const [editingService, setEditingService] = useState<any>(null);
   const [formData, setFormData] = useState<FormData>({ ...EMPTY_FORM });
   const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
 
   function set(field: keyof FormData, value: any) {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -65,11 +104,16 @@ export default function AdminServicesPage() {
       toast({ variant: 'destructive', title: 'Title and summary are required' });
       return;
     }
+    if (!formData.category) {
+      toast({ variant: 'destructive', title: 'Please select a category' });
+      return;
+    }
+    const payload = { ...formData };
     if (editingService) {
-      updateDocumentNonBlocking(doc(firestore, 'services', editingService.id), formData);
+      updateDocumentNonBlocking(doc(firestore, 'services', editingService.id), payload);
       toast({ title: 'Service updated', description: formData.title });
     } else {
-      addDocumentNonBlocking(collection(firestore, 'services'), formData);
+      addDocumentNonBlocking(collection(firestore, 'services'), payload);
       toast({ title: 'Service created', description: formData.title });
     }
     closePanel();
@@ -88,7 +132,11 @@ export default function AdminServicesPage() {
 
   const sorted = [...(services || [])]
     .filter(s => !search || s.title?.toLowerCase().includes(search.toLowerCase()))
+    .filter(s => activeCategory === 'all' || s.category === activeCategory)
     .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+  // The subcategories available for the currently selected category in the form
+  const currentSubcategories = CATEGORIES.find(c => c.value === formData.category)?.subcategories || [];
 
   return (
     <div className="space-y-8 relative">
@@ -125,6 +173,41 @@ export default function AdminServicesPage() {
         ))}
       </div>
 
+      {/* ── Category Filter Tabs ── */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => setActiveCategory('all')}
+          className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all border ${activeCategory === 'all'
+              ? 'lavender-gradient text-white border-transparent shadow-lg'
+              : 'border-white/10 text-muted-foreground hover:text-white hover:bg-white/5'
+            }`}
+        >
+          All
+        </button>
+        {CATEGORIES.map(cat => {
+          const Icon = cat.icon;
+          const count = services?.filter(s => s.category === cat.value).length || 0;
+          return (
+            <button
+              key={cat.value}
+              onClick={() => setActiveCategory(cat.value)}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all border ${activeCategory === cat.value
+                  ? 'lavender-gradient text-white border-transparent shadow-lg'
+                  : 'border-white/10 text-muted-foreground hover:text-white hover:bg-white/5'
+                }`}
+            >
+              <Icon className={`w-3 h-3 ${activeCategory === cat.value ? 'text-white' : cat.color}`} />
+              {cat.label}
+              {count > 0 && (
+                <span className={`ml-0.5 ${activeCategory === cat.value ? 'opacity-80' : 'text-muted-foreground'}`}>
+                  ({count})
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
       {/* ── Search ── */}
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -147,45 +230,57 @@ export default function AdminServicesPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {sorted.map((service, idx) => (
-            <div key={service.id} className="glass-card border-white/10 rounded-2xl p-5 group animate-fade-up flex items-center gap-5">
-              {/* Order badge + emoji */}
-              <div className="w-12 h-12 rounded-xl lavender-gradient flex items-center justify-center text-xl font-bold text-white shrink-0 shadow-lg">
-                {ICON_MAP[service.displayOrder] || `#${service.displayOrder}`}
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <h3 className="font-headline font-bold text-lg truncate">{service.title}</h3>
-                  {service.popular && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full lavender-gradient text-white font-bold uppercase tracking-widest shrink-0">Popular</span>
-                  )}
+          {sorted.map((service) => {
+            const catMeta = getCategoryMeta(service.category);
+            const CatIcon = catMeta?.icon;
+            return (
+              <div key={service.id} className="glass-card border-white/10 rounded-2xl p-5 group animate-fade-up flex items-center gap-5">
+                {/* Order badge + emoji */}
+                <div className="w-12 h-12 rounded-xl lavender-gradient flex items-center justify-center text-xl font-bold text-white shrink-0 shadow-lg">
+                  {ICON_MAP[service.displayOrder] || `#${service.displayOrder}`}
                 </div>
-                <p className="text-primary font-bold text-sm mb-1">{service.priceInfo}</p>
-                <p className="text-xs text-muted-foreground line-clamp-1">{service.shortDescription}</p>
-              </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => togglePopular(service)}
-                  className={`h-8 px-3 text-xs ${service.popular ? 'text-yellow-400 hover:text-yellow-300' : 'text-muted-foreground hover:text-yellow-400'}`}
-                >
-                  <Star className={`w-3.5 h-3.5 mr-1 ${service.popular ? 'fill-current' : ''}`} />
-                  {service.popular ? 'Unstar' : 'Star'}
-                </Button>
-                <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10" onClick={() => openEdit(service)}>
-                  <Edit2 className="w-3.5 h-3.5" />
-                </Button>
-                <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(service.id, service.title)}>
-                  <Trash2 className="w-3.5 h-3.5" />
-                </Button>
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                    <h3 className="font-headline font-bold text-lg truncate">{service.title}</h3>
+                    {service.popular && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full lavender-gradient text-white font-bold uppercase tracking-widest shrink-0">Popular</span>
+                    )}
+                    {/* Category badge */}
+                    {catMeta && (
+                      <span className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 font-bold uppercase tracking-widest shrink-0 ${catMeta.color}`}>
+                        {CatIcon && <CatIcon className="w-2.5 h-2.5" />}
+                        {catMeta.label}
+                        {service.subcategory && ` · ${getSubcategoryLabel(service.category, service.subcategory)}`}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-primary font-bold text-sm mb-1">{service.priceInfo}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-1">{service.shortDescription}</p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => togglePopular(service)}
+                    className={`h-8 px-3 text-xs ${service.popular ? 'text-yellow-400 hover:text-yellow-300' : 'text-muted-foreground hover:text-yellow-400'}`}
+                  >
+                    <Star className={`w-3.5 h-3.5 mr-1 ${service.popular ? 'fill-current' : ''}`} />
+                    {service.popular ? 'Unstar' : 'Star'}
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-white/10" onClick={() => openEdit(service)}>
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(service.id, service.title)}>
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -214,6 +309,59 @@ export default function AdminServicesPage() {
                 <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Service Title *</label>
                 <Input value={formData.title} onChange={e => set('title', e.target.value)} placeholder="e.g. Cinematic Color Grading" className="glass-card border-white/10 h-11" />
               </div>
+
+              {/* ── Category ── */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Category *</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {CATEGORIES.map(cat => {
+                    const Icon = cat.icon;
+                    const selected = formData.category === cat.value;
+                    return (
+                      <button
+                        key={cat.value}
+                        type="button"
+                        onClick={() => {
+                          set('category', cat.value);
+                          set('subcategory', ''); // reset subcategory on category change
+                        }}
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all text-left ${selected
+                            ? 'lavender-gradient text-white border-transparent shadow-lg'
+                            : 'border-white/10 text-muted-foreground hover:text-white hover:bg-white/5'
+                          }`}
+                      >
+                        <Icon className={`w-4 h-4 shrink-0 ${selected ? 'text-white' : cat.color}`} />
+                        {cat.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ── Subcategory (only for Social Media) ── */}
+              {currentSubcategories.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Platform / Subcategory</label>
+                  <div className="flex flex-wrap gap-2">
+                    {currentSubcategories.map(sub => {
+                      const selected = formData.subcategory === sub.value;
+                      return (
+                        <button
+                          key={sub.value}
+                          type="button"
+                          onClick={() => set('subcategory', selected ? '' : sub.value)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all border ${selected
+                              ? 'lavender-gradient text-white border-transparent shadow-lg'
+                              : 'border-white/10 text-muted-foreground hover:text-white hover:bg-white/5'
+                            }`}
+                        >
+                          {sub.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Short summary */}
               <div className="space-y-1">

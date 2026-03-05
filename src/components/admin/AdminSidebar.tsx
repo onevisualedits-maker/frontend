@@ -15,9 +15,11 @@ import {
   ChevronRight,
   Settings,
   Clapperboard,
+  Star,
 } from 'lucide-react';
-import { useAuth } from '@/firebase';
+import { useAuth, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { signOut } from 'firebase/auth';
+import { collection, query, where } from 'firebase/firestore';
 
 const menuItems = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -25,6 +27,7 @@ const menuItems = [
   { name: 'Projects', href: '/admin/projects', icon: Video },
   { name: 'Services', href: '/admin/services', icon: Briefcase },
   { name: 'Blog', href: '/admin/blog', icon: FileText },
+  { name: 'Testimonials', href: '/admin/testimonials', icon: Star },
   { name: 'About Page', href: '/admin/about', icon: UserCircle },
   { name: 'Inbox', href: '/admin/inbox', icon: Inbox },
   { name: 'Users', href: '/admin/users', icon: UserCircle },
@@ -34,6 +37,14 @@ const menuItems = [
 export function AdminSidebar() {
   const pathname = usePathname();
   const auth = useAuth();
+  const firestore = useFirestore();
+
+  const pendingQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'testimonials'), where('approved', '==', false));
+  }, [firestore]);
+  const { data: pendingTestimonials } = useCollection(pendingQuery);
+  const pendingCount = pendingTestimonials?.length ?? 0;
 
   return (
     <div className="w-64 glass-card border-r-0 border-y-0 rounded-none h-screen sticky top-0 flex flex-col p-6">
@@ -63,6 +74,11 @@ export function AdminSidebar() {
               <div className="flex items-center gap-3">
                 <item.icon className={cn("w-5 h-5", isActive ? "text-white" : "text-primary")} />
                 <span className="font-medium">{item.name}</span>
+                {item.href === '/admin/testimonials' && pendingCount > 0 && (
+                  <span className="ml-auto text-[10px] font-black bg-yellow-500 text-black rounded-full w-5 h-5 flex items-center justify-center shrink-0">
+                    {pendingCount}
+                  </span>
+                )}
               </div>
               {isActive && <ChevronRight className="w-4 h-4" />}
             </Link>

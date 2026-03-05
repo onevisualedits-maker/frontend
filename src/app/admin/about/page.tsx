@@ -88,12 +88,6 @@ export default function AdminAboutManagement() {
     <div className="space-y-8 max-w-5xl">
       {/* Header */}
       <div className="flex justify-between items-end">
-        <div>
-          <h1 className="font-headline text-4xl font-bold uppercase tracking-tighter mb-2">
-            Manage <span className="text-primary">About Page</span>
-          </h1>
-          <p className="text-muted-foreground">Edit your header, bio, and profile image for the public About page.</p>
-        </div>
         <Button
           onClick={handleSave}
           disabled={isSaving}

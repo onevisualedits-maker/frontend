@@ -5,7 +5,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
-import { GiveReviewButton } from '@/components/ui/GiveReviewButton';
+import { PublicOnlyReviewButton } from '@/components/ui/PublicOnlyReviewButton';
 
 export const metadata: Metadata = {
   title: 'JeevanEditz | Video Editing Portfolio',
@@ -31,7 +31,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
-          <GiveReviewButton />
+          <PublicOnlyReviewButton />
           <Toaster />
         </FirebaseClientProvider>
       </body>

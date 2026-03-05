@@ -19,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { collection } from 'firebase/firestore';
+import { useSiteSettings } from '@/hooks/use-site-settings';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name is required" }),
@@ -30,15 +31,52 @@ const formSchema = z.object({
 export default function ContactPage() {
   const { toast } = useToast();
   const firestore = useFirestore();
+  const { settings } = useSiteSettings();
+
+  // Build location string from parts that exist
+  const locationParts = [settings.address, settings.city, settings.country].filter(Boolean);
+  const locationStr = locationParts.join(', ') || null;
+
+  // Build WhatsApp link — prefer dedicated whatsapp number, fallback to phone
+  const waNumber = (settings.whatsapp || settings.phone).replace(/\D/g, '');
+  const waHref = waNumber ? `https://wa.me/${waNumber}` : '#';
+
+  const contacts = [
+    {
+      icon: Mail,
+      label: 'Email',
+      value: settings.contactEmail,
+      href: `mailto:${settings.contactEmail}`,
+      show: !!settings.contactEmail,
+    },
+    {
+      icon: Phone,
+      label: 'Phone / WhatsApp',
+      value: settings.phone || settings.whatsapp || null,
+      href: settings.phone ? `tel:${settings.phone.replace(/\s/g, '')}` : waHref,
+      show: !!(settings.phone || settings.whatsapp),
+    },
+    {
+      icon: MapPin,
+      label: 'Base',
+      value: locationStr,
+      href: locationStr
+        ? `https://maps.google.com/?q=${encodeURIComponent(locationStr)}`
+        : '#',
+      show: !!locationStr,
+    },
+    {
+      icon: MessageSquare,
+      label: 'Social',
+      value: '@JeevanEditz',
+      href: settings.instagramUrl || settings.twitterUrl || settings.youtubeUrl || '#',
+      show: true,
+    },
+  ].filter(c => c.show && c.value);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    },
+    defaultValues: { name: "", email: "", subject: "", message: "" },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -47,7 +85,7 @@ export default function ContactPage() {
         addDocumentNonBlocking(collection(firestore, 'contactSubmissions'), {
           ...values,
           submissionDate: new Date().toISOString(),
-          status: 'New'
+          status: 'New',
         });
       }
 
@@ -57,16 +95,14 @@ export default function ContactPage() {
         body: JSON.stringify(values),
       });
 
-      if (!res.ok) {
-        throw new Error('Failed to send email');
-      }
+      if (!res.ok) throw new Error('Failed to send email');
 
       toast({
         title: "Message Sent!",
         description: "Thanks for reaching out. I'll get back to you within 24 hours.",
       });
       form.reset();
-    } catch (e) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error Sending Message",
@@ -87,15 +123,12 @@ export default function ContactPage() {
           </p>
 
           <div className="space-y-8">
-            {[
-              { icon: Mail, label: "Email", value: "contact@jeevaneditz.com", href: "mailto:contact@jeevaneditz.com" },
-              { icon: Phone, label: "Phone / WhatsApp", value: "+1 (555) 000-EDITS", href: "tel:+15550000000" },
-              { icon: MapPin, label: "Base", value: "London, UK / Remote Worldwide", href: "#" },
-              { icon: MessageSquare, label: "Social", value: "@JeevanEditz", href: "#" }
-            ].map((contact, i) => (
+            {contacts.map((contact, i) => (
               <a
                 key={i}
                 href={contact.href}
+                target={contact.href.startsWith('http') ? '_blank' : undefined}
+                rel="noopener noreferrer"
                 className={`flex items-center gap-6 group hover:text-primary transition-colors animate-fade-up stagger-${i + 3}`}
               >
                 <div className="w-14 h-14 rounded-2xl glass-card flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-lg">

@@ -122,12 +122,6 @@ export default function AdminHeroManagement() {
         <div className="space-y-8 max-w-6xl">
             {/* Page header */}
             <div className="flex justify-between items-end">
-                <div>
-                    <h1 className="font-headline text-4xl font-bold uppercase tracking-tighter mb-2">
-                        Hero <span className="text-primary">Management</span>
-                    </h1>
-                    <p className="text-muted-foreground">Control the full-screen hero on the home page — background, text, and CTAs.</p>
-                </div>
                 <Button onClick={handleSave} disabled={isSaving} className="lavender-gradient h-12 px-8 font-bold shadow-xl">
                     {isSaving ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Save className="w-5 h-5 mr-2" />}
                     {isSaving ? 'Saving...' : 'Save All'}

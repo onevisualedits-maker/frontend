@@ -228,14 +228,6 @@ export default function AdminBlogManagement() {
     <div className="space-y-8 relative">
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-        <div>
-          <h1 className="font-headline text-4xl font-bold uppercase tracking-tighter mb-1">
-            Blog <span className="text-primary">Studio</span>
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {publishedPosts?.length || 0} published · {drafts?.length || 0} drafts
-          </p>
-        </div>
         <div className="flex gap-3">
           <Button variant="outline" asChild className="glass-card border-white/10 h-11 hover:border-primary/40">
             <Link href="/blog/generator"><Sparkles className="w-4 h-4 mr-2 text-primary" /> AI Ideas</Link>

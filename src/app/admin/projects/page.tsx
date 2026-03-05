@@ -245,14 +245,6 @@ export default function AdminProjectsPage() {
     <div className="space-y-8 relative">
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-        <div>
-          <h1 className="font-headline text-4xl font-bold uppercase tracking-tighter mb-1">
-            Manage <span className="text-primary">Projects</span>
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            {projects?.length || 0} total projects · {filtered.length} showing
-          </p>
-        </div>
         <Button onClick={openAdd} className="lavender-gradient h-11 px-6 font-bold shadow-lg shrink-0">
           <Plus className="w-4 h-4 mr-2" /> Add Project
         </Button>
