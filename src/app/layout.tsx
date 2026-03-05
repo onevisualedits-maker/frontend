@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 import { PublicOnlyReviewButton } from '@/components/ui/PublicOnlyReviewButton';
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: 'JeevanEditz | Video Editing Portfolio',
@@ -33,6 +34,7 @@ export default function RootLayout({
           <Footer />
           <PublicOnlyReviewButton />
           <Toaster />
+          <Analytics />
         </FirebaseClientProvider>
       </body>
     </html>
